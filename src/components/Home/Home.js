@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useMemo } from 'react';
 import AuthContext from '../../store/auth-context';
 import ThemeContext from '../../store/theme-context';
 import TranslationContext from '../../store/translation-context';
@@ -20,8 +20,14 @@ const Home = () => {
       <Button onClick={authCtx.onLogout}>Logout</Button>
       <p>Theme is {themeCtx.theme}</p>
       <p>Locale is {localeCtx.locale}</p>
+      <p>{localeCtx.translate('common.greeting')}</p>
     </Card>
   );
+
+  // looks like localeCtx.translate is called on every redraw of the component.
+  // even when the locale is not changed. 
+  // is there a way fix this? 
+  // useMemo hook and pass the locale there?
 };
 
 export default Home;

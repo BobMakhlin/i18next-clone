@@ -9,6 +9,9 @@ const TranslationContext = React.createContext({
   changeLocale: () => {
     // By default is a dummy empty function.
   },
+  translate: (key) => {
+    // By default is a dummy empty function.
+  },
 });
 
 export const TranslationContextProvider = (props) => {
@@ -22,9 +25,24 @@ export const TranslationContextProvider = (props) => {
     setLocale(value);
   }, []);
 
+  const translate = useCallback((key) => {
+    // A basic translation algorithm for demo purposes.
+
+    console.log("translate. key:", key);
+
+    if (key === "common.greeting") {
+      if (locale === "en-US") {
+        return "Hello";
+      }
+      if (locale === "de-DE") {
+        return "Hallo";
+      }
+    }
+  }, [locale]);
+
   return (
     <TranslationContext.Provider
-      value={{ locale, changeLocale, availableLocales: LOCALES }}
+      value={{ locale, availableLocales: LOCALES, changeLocale, translate }}
     >
       {props.children}
     </TranslationContext.Provider>
