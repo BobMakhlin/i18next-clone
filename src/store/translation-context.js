@@ -1,7 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 const DEFAULT_LOCALE = "en-US";
 const LOCALES = ["en-US", "de-DE"];
+const DEFAULT_VOCABULARIES = {
+  "en-US": {},
+  "de-DE": {},
+};
 
 const TranslationContext = React.createContext({
   locale: DEFAULT_LOCALE,
@@ -16,6 +20,20 @@ const TranslationContext = React.createContext({
 
 export const TranslationContextProvider = (props) => {
   const [locale, setLocale] = useState(DEFAULT_LOCALE);
+  const [vocabularies, setVocabularies] = useState(DEFAULT_VOCABULARIES);
+
+  useEffect(() => {
+    const fetchVocabularies = async () => {
+      const [enUs, deDe] = await Promise.all([
+        fetch("languages/en-US.json").then((response) => response.json()),
+        fetch("languages/de-DE.json").then((response) => response.json()),
+      ]);
+
+      setVocabularies({ "en-US": enUs, "de-DE": deDe });
+    };
+
+    fetchVocabularies();
+  }, []);
 
   const changeLocale = useCallback((value) => {
     if (!LOCALES.includes(value)) {
@@ -25,20 +43,12 @@ export const TranslationContextProvider = (props) => {
     setLocale(value);
   }, []);
 
-  const translate = useCallback((key) => {
-    // A basic translation algorithm for demo purposes.
-
-    console.log("translate. key:", key);
-
-    if (key === "common.greeting") {
-      if (locale === "en-US") {
-        return "Hello";
-      }
-      if (locale === "de-DE") {
-        return "Hallo";
-      }
-    }
-  }, [locale]);
+  const translate = useCallback(
+    (key) => {
+      return vocabularies[locale][key];
+    },
+    [locale, vocabularies]
+  );
 
   return (
     <TranslationContext.Provider

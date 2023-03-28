@@ -23,11 +23,6 @@ const Home = () => {
       <p>{localeCtx.translate('common.greeting')}</p>
     </Card>
   );
-
-  // looks like localeCtx.translate is called on every redraw of the component.
-  // even when the locale is not changed. 
-  // is there a way fix this? 
-  // useMemo hook and pass the locale there?
 };
 
 export default Home;
