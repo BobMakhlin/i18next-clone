@@ -1,62 +1,76 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, {
+  useContext,
+  createContext,
+  useCallback,
+  useEffect,
+  useState,
+} from "react";
 
+const LOCALE_LOCAL_STORAGE_KEY = "locale";
 const DEFAULT_LOCALE = "en-US";
 const LOCALES = ["en-US", "de-DE"];
-const DEFAULT_VOCABULARIES = {
-  "en-US": {},
-  "de-DE": {},
-};
 
-const TranslationContext = React.createContext({
-  locale: DEFAULT_LOCALE,
+const TranslationContext = createContext({
+  locale: null,
   availableLocales: LOCALES,
   changeLocale: () => {
     // By default is a dummy empty function.
   },
-  translate: (key) => {
+  t: (key) => {
     // By default is a dummy empty function.
   },
 });
 
-export const TranslationContextProvider = (props) => {
-  const [locale, setLocale] = useState(DEFAULT_LOCALE);
-  const [vocabularies, setVocabularies] = useState(DEFAULT_VOCABULARIES);
+const TranslationContextProvider = (props) => {
+  const [locale, setLocale] = useState(null);
+  const [currentVocabulary, setCurrentVocabulary] = useState(null);
 
-  useEffect(() => {
-    const fetchVocabularies = async () => {
-      const [enUs, deDe] = await Promise.all([
-        fetch("languages/en-US.json").then((response) => response.json()),
-        fetch("languages/de-DE.json").then((response) => response.json()),
-      ]);
+  const changeLocale = useCallback(
+    (value) => {
+      if (!LOCALES.includes(value)) {
+        value = DEFAULT_LOCALE;
+      }
 
-      setVocabularies({ "en-US": enUs, "de-DE": deDe });
-    };
+      if (locale === value) {
+        return;
+      }
 
-    fetchVocabularies();
-  }, []);
+      fetch(`languages/${value}.json`)
+        .then((response) => response.json())
+        .then((x) => setCurrentVocabulary(x));
 
-  const changeLocale = useCallback((value) => {
-    if (!LOCALES.includes(value)) {
-      throw new Error(`Locale ${value} is not supported`);
-    }
-
-    setLocale(value);
-  }, []);
-
-  const translate = useCallback(
-    (key) => {
-      return vocabularies[locale][key];
+      setLocale(value);
+      localStorage.setItem(LOCALE_LOCAL_STORAGE_KEY, value);
     },
-    [locale, vocabularies]
+    [locale]
   );
 
+  useEffect(() => {
+    changeLocale(
+      localStorage.getItem(LOCALE_LOCAL_STORAGE_KEY) ?? DEFAULT_LOCALE
+    );
+  }, []); // Should only be called on mount.
+
+  const t = useCallback(
+    (key) => {
+      return currentVocabulary ? currentVocabulary[key] : null;
+    },
+    [currentVocabulary]
+  );
+
+  const contextValue = {
+    locale, // The current locale.
+    availableLocales: LOCALES,
+    changeLocale,
+    t,
+  };
+
   return (
-    <TranslationContext.Provider
-      value={{ locale, availableLocales: LOCALES, changeLocale, translate }}
-    >
+    <TranslationContext.Provider value={contextValue}>
       {props.children}
     </TranslationContext.Provider>
   );
 };
 
-export default TranslationContext;
+export const useTranslation = () => useContext(TranslationContext);
+export default TranslationContextProvider;

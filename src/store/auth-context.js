@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 
-const AuthContext = React.createContext({
+const AuthContext = createContext({
   isLoggedIn: false,
   onLogout: () => {
     // By default is a dummy empty function.

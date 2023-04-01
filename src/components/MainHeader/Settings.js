@@ -1,44 +1,28 @@
-import { useCallback, useContext } from "react";
+import { useContext } from "react";
 import AuthContext from "../../store/auth-context";
 import ThemeContext from "../../store/theme-context";
-import TranslationContext from "../../store/translation-context";
+import { useTranslation } from "../../store/translation-context";
 import { DropDownList } from "../UI/DropDownList/DropDownList";
 
 const Settings = () => {
-  const authCtx = useContext(AuthContext);
-  const themeCtx = useContext(ThemeContext);
-  const localeCtx = useContext(TranslationContext);
-
-  const { changeTheme } = themeCtx;
-  const { changeLocale } = localeCtx;
-
-  const handleThemeChange = useCallback(
-    (value) => {
-      changeTheme(value);
-    },
-    [changeTheme]
-  );
-  const handleLocaleChange = useCallback(
-    (value) => {
-      changeLocale(value);
-    },
-    [changeLocale]
-  );
+  const { isLoggedIn } = useContext(AuthContext);
+  const { changeTheme, themesAvailable, theme } = useContext(ThemeContext);
+  const { changeLocale, availableLocales, locale } = useTranslation();
 
   return (
     <nav>
-      {authCtx.isLoggedIn && (
+      {isLoggedIn && (
         <DropDownList
-          items={themeCtx.themesAvailable}
-          selectedItem={themeCtx.theme}
-          onChange={handleThemeChange}
+          items={themesAvailable}
+          selectedItem={theme}
+          onChange={changeTheme}
         />
       )}
-      {authCtx.isLoggedIn && (
+      {isLoggedIn && (
         <DropDownList
-          items={localeCtx.availableLocales}
-          selectedItem={localeCtx.locale}
-          onChange={handleLocaleChange}
+          items={availableLocales}
+          selectedItem={locale}
+          onChange={changeLocale}
         />
       )}
     </nav>

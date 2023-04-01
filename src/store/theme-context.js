@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { createContext, useCallback, useEffect, useState } from "react";
 
 const THEMES = ["dark", "light"];
 const DEFAULT_THEME = "dark";
 const LOCAL_STORAGE_KEY = "theme";
 
-const ThemeContext = React.createContext({
+const ThemeContext = createContext({
   themesAvailable: THEMES,
   theme: DEFAULT_THEME,
   changeTheme: () => {
