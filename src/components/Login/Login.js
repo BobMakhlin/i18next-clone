@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useReducer, useContext, useRef } from "react";
+import React, { useReducer, useContext } from "react";
 
 import Card from "../UI/Card/Card";
 import classes from "./Login.module.css";
 import Button from "../UI/Button/Button";
-import AuthContext from "../../store/auth-context";
-import Input from "../UI/Input/Input";
+import {useAuth} from "../../store/auth-context";
 
 const formReducer = (state, action) => {
   const stateCopy = { ...state };
@@ -35,9 +34,7 @@ const formReducer = (state, action) => {
 };
 
 const Login = (props) => {
-  const emailInputRef = useRef();
-  const passwordInputRef = useRef();
-  const authCtx = useContext(AuthContext);
+  const {onLogin} = useAuth();
 
   const [formState, dispatchForm] = useReducer(formReducer, {
     email: "",
@@ -65,21 +62,7 @@ const Login = (props) => {
 
   const submitHandler = (event) => {
     event.preventDefault();
-
-    if (formState.formIsValid) {
-      authCtx.onLogin(formState.email, formState.password);
-      return;
-    }
-
-    if (!formState.emailIsValid) {
-      emailInputRef.current.focus();
-      return;
-    }
-
-    if (!formState.passwordIsValid) {
-      passwordInputRef.current.focus();
-      return;
-    }
+    onLogin(formState.email, formState.password);
   };
 
   return (

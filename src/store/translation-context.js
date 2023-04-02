@@ -62,7 +62,7 @@ const TranslationContextProvider = (props) => {
     locale, // The current locale.
     availableLocales: LOCALES,
     changeLocale,
-    t,
+    t, // Traslation function.
   };
 
   return (
