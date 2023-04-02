@@ -1,10 +1,10 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 const THEMES = ["dark", "light"];
 const DEFAULT_THEME = "dark";
 const LOCAL_STORAGE_KEY = "theme";
 
-const ThemeContext = React.createContext({
+const ThemeContext = createContext({
   themesAvailable: THEMES,
   theme: DEFAULT_THEME,
   changeTheme: () => {
@@ -41,4 +41,5 @@ export const ThemeContextProvider = (props) => {
   );
 };
 
-export default ThemeContext;
+export const useTheme = () => useContext(ThemeContext);
+export default ThemeContextProvider;

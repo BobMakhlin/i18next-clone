@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { createContext, useCallback, useContext, useEffect, useState } from "react";
 
-const AuthContext = React.createContext({
+const AuthContext = createContext({
   isLoggedIn: false,
   onLogout: () => {
     // By default is a dummy empty function.
@@ -10,7 +10,7 @@ const AuthContext = React.createContext({
   },
 });
 
-export const AuthContextProvider = (props) => {
+const AuthContextProvider = (props) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
@@ -40,4 +40,5 @@ export const AuthContextProvider = (props) => {
   );
 };
 
-export default AuthContext;
+export const useAuth = () => useContext(AuthContext);
+export default AuthContextProvider;

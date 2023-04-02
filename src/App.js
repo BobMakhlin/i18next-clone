@@ -1,19 +1,19 @@
-import React, { useContext, useState } from "react";
+import React from "react";
 
 import Login from "./components/Login/Login";
 import Home from "./components/Home/Home";
 import MainHeader from "./components/MainHeader/MainHeader";
-import AuthContext from "./store/auth-context";
+import {useAuth} from "./store/auth-context";
 
 function App() {
-  const ctx = useContext(AuthContext);
+  const {isLoggedIn} = useAuth();
 
   return (
     <>
       <MainHeader />
       <main>
-        {!ctx.isLoggedIn && <Login />}
-        {ctx.isLoggedIn && <Home />}
+        {!isLoggedIn && <Login />}
+        {isLoggedIn && <Home />}
       </main>
     </>
   );
